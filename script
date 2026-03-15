@@ -1,36 +1,76 @@
-task.wait(1)
+-- OPENSOURCE
 
+task.wait(1)
 local StarterGui = game:GetService("StarterGui")
-local found = false
+local foundLuckyBlock = false
 
 local function notify(text)
     StarterGui:SetCore("SendNotification", {
         Title = "normand",
-        Text = text,
+        Text = text .. " | normand",
         Duration = 5
     })
 end
 
-local function change(v)
+local function isLuckyBlock(display)
+    if not display or not display:IsA("TextLabel") then
+        return false
+    end
+    
+    local txt = string.lower(display.Text)
+    return string.find(txt,"lucky") or string.find(txt,"bloc")
+end
+
+local function changeText(v)
     if v:IsA("TextLabel") then
+        local parent = v.Parent
+        if not parent then return end
         
-        if v.Text == "Mytique" or v.Text == "mytique" then
-            found = true
-            
+        local display = parent:FindFirstChild("DisplayName")
+
+        if isLuckyBlock(display) then
+            foundLuckyBlock = true
+
+            -- texte OG
             v.Text = "OG"
             v.TextColor3 = Color3.fromRGB(255,221,85)
 
-            local stroke = Instance.new("UIStroke")
-            stroke.Thickness = 2
-            stroke.Color = Color3.new(0,0,0)
-            stroke.Parent = v
-        end
+            if not v:FindFirstChildOfClass("UIStroke") then
+                local stroke = Instance.new("UIStroke")
+                stroke.Color = Color3.fromRGB(0,0,0)
+                stroke.Thickness = 2
+                stroke.Parent = v
+            end
 
-        if v.Text == "$2.5M" or v.Text == "$2.5m" then
-            v.Text = "$750B"
+            local gradient = v:FindFirstChildOfClass("UIGradient")
+            if gradient then
+                gradient.Color = ColorSequence.new{
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,221,85)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255,170,0))
+                }
+            end
+
+            -- prix fake
+            if string.find(v.Text,"$") then
+                v.Text = "$750B"
+            end
         end
-        
     end
+end
+
+for _,v in pairs(game:GetDescendants()) do
+    changeText(v)
+end
+
+game.DescendantAdded:Connect(changeText)
+
+task.wait(1)
+
+if foundLuckyBlock then
+    notify("Successfully Injected Lucky Blocks")
+else
+    notify("No Lucky Blocks Found")
+end
 end
 
 for _,v in pairs(game:GetDescendants()) do
