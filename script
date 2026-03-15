@@ -1,68 +1,48 @@
--- OPENSOURCE
-
 task.wait(1)
-local StarterGui = game:GetService("StarterGui")
-loca-- OPENSOURCE
 
-task.wait(1)
 local StarterGui = game:GetService("StarterGui")
-local foundLuckyBlock = false
+local found = false
 
 local function notify(text)
     StarterGui:SetCore("SendNotification", {
         Title = "normand",
-        Text = text .. " | normand",
+        Text = text,
         Duration = 5
     })
 end
 
-local function changeText(v)
+local function change(v)
     if v:IsA("TextLabel") then
-        local parent = v.Parent
-        local display = parent:FindFirstChild("DisplayName")
+        
+        if v.Text == "Mytique" or v.Text == "mytique" then
+            found = true
+            
+            v.Text = "OG"
+            v.TextColor3 = Color3.fromRGB(255,221,85)
 
-        if display and display:IsA("TextLabel") and (display.Text == "Lucky Block" or display.Text == "Bloc de la chance") then
-            foundLuckyBlock = true
-
-            if v.Text == "Mytique" or v.Text == "mytique" then
-                v.Text = "OG"
-                v.TextColor3 = Color3.fromRGB(255,221,85)
-
-                if not v:FindFirstChildOfClass("UIStroke") then
-                    local stroke = Instance.new("UIStroke")
-                    stroke.Color = Color3.fromRGB(0,0,0)
-                    stroke.Thickness = 2
-                    stroke.Parent = v
-                end
-
-                local gradient = v:FindFirstChildOfClass("UIGradient")
-                if gradient then
-                    gradient.Color = ColorSequence.new{
-                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,221,85)),
-                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255,170,0))
-                    }
-                end
-            end
-
-            if v.Text == "$2.5M" or v.Text == "$2.5m" then
-                v.Text = "$750B"
-            end
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 2
+            stroke.Color = Color3.new(0,0,0)
+            stroke.Parent = v
         end
+
+        if v.Text == "$2.5M" or v.Text == "$2.5m" then
+            v.Text = "$750B"
+        end
+        
     end
 end
 
-for _, v in pairs(game:GetDescendants()) do
-    changeText(v)
+for _,v in pairs(game:GetDescendants()) do
+    change(v)
 end
 
-game.DescendantAdded:Connect(function(v)
-    changeText(v)
-end)
+game.DescendantAdded:Connect(change)
 
 task.wait(1)
 
-if foundLuckyBlock then
-    notify("Successfully Injected Mytique Lucky Blocks")
+if found then
+    notify("Lucky Block modifié")
 else
-    notify("There Are No Mytique Lucky Blocks In The Server")
+    notify("Aucun bloc mytique trouvé")
 end
