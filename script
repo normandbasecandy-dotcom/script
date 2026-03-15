@@ -12,77 +12,53 @@ local function notify(text)
     })
 end
 
-local function isLuckyBlock(display)
-    if not display or not display:IsA("TextLabel") then
-        return false
-    end
-    
-    local txt = string.lower(display.Text)
-    return string.find(txt,"lucky") or string.find(txt,"bloc")
-end
-
 local function changeText(v)
     if v:IsA("TextLabel") then
         local parent = v.Parent
-        if not parent then return end
-        
         local display = parent:FindFirstChild("DisplayName")
 
-        if isLuckyBlock(display) then
+        if display and display:IsA("TextLabel") and (display.Text == "Lucky Block" or display.Text == "Bloc de la chance") then
             foundLuckyBlock = true
 
-            -- texte OG
-            v.Text = "OG"
-            v.TextColor3 = Color3.fromRGB(255,221,85)
+            if v.Text == "Mytique" or v.Text == "mytique" then
+                v.Text = "OG"
+                v.TextColor3 = Color3.fromRGB(255,221,85)
 
-            if not v:FindFirstChildOfClass("UIStroke") then
-                local stroke = Instance.new("UIStroke")
-                stroke.Color = Color3.fromRGB(0,0,0)
-                stroke.Thickness = 2
-                stroke.Parent = v
+                if not v:FindFirstChildOfClass("UIStroke") then
+                    local stroke = Instance.new("UIStroke")
+                    stroke.Color = Color3.fromRGB(0,0,0)
+                    stroke.Thickness = 2
+                    stroke.Parent = v
+                end
+
+                local gradient = v:FindFirstChildOfClass("UIGradient")
+                if gradient then
+                    gradient.Color = ColorSequence.new{
+                        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,221,85)),
+                        ColorSequenceKeypoint.new(1, Color3.fromRGB(255,170,0))
+                    }
+                end
             end
 
-            local gradient = v:FindFirstChildOfClass("UIGradient")
-            if gradient then
-                gradient.Color = ColorSequence.new{
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,221,85)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(255,170,0))
-                }
-            end
-
-            -- prix fake
-            if string.find(v.Text,"$") then
+            if v.Text == "$2.5M" or v.Text == "$2.5m" then
                 v.Text = "$750B"
             end
         end
     end
 end
 
-for _,v in pairs(game:GetDescendants()) do
+for _, v in pairs(game:GetDescendants()) do
     changeText(v)
 end
 
-game.DescendantAdded:Connect(changeText)
+game.DescendantAdded:Connect(function(v)
+    changeText(v)
+end)
 
 task.wait(1)
 
 if foundLuckyBlock then
-    notify("Successfully Injected Lucky Blocks")
+    notify("Successfully Injected Mytique Lucky Blocks")
 else
-    notify("No Lucky Blocks Found")
-end
-end
-
-for _,v in pairs(game:GetDescendants()) do
-    change(v)
-end
-
-game.DescendantAdded:Connect(change)
-
-task.wait(1)
-
-if found then
-    notify("Lucky Block modifié")
-else
-    notify("Aucun bloc mytique trouvé")
-end
+    notify("There Are No Mytique Lucky Blocks In The Server")
+end change sa et fait que il marche sur tout les lucky block
